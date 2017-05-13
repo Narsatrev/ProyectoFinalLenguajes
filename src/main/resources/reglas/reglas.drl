@@ -1,0 +1,300 @@
+package rules
+
+import proyecto.modelo.*;
+
+/* SOLO PARA REFERENCIA. EL MODELO YA ESTA FORMALIZADO EN EL PAQUETE MODELO 
+
+declare Materia
+	id_materia: int @key
+	nombre: String @key
+	profesor: String @key
+	departamento: String @key
+	periodo: String @key
+	clave: String @key
+end
+
+declare Bloque
+	id_bloque:int @key
+	materia:Materia @key
+	nombre: String
+end
+
+declare Clase
+	id_clase:int @key
+	bloque: Bloque @key
+	tema: String @key
+end
+
+declare Contenido
+	id_contenido:int @key
+	clase: Clase @key
+	tipo:String @key
+	url_contenido:String @key
+	contenido_texto:String @key
+end
+
+declare Examen
+	id_examen: int @key
+	bloque: Bloque @key
+	materia: Materia @key
+	nombre: String @key
+end
+
+declare Pregunta
+	id_pregunta: int @key
+	examen: Examen @key
+	descripcion: String @key
+	nivel_dificultad: int @key
+end
+
+
+declare Opcion
+	id_opcion: int @key
+	pregunta: Pregunta @key
+	descripcion: String @key
+	es_correcta: boolean @key
+end
+
+declare Historial
+	examen: Examen @key
+	alumno: Alumno @key
+	pregunta: Pregunta @key
+	respuestaAlumno: Opcion @key
+end
+
+//objeto que ayuda a regresar los datos del examen actual
+declare ExamenActualAux
+	nombre: String @key
+	id_examen: int @key
+end
+
+*/
+
+
+//objeto auxiliar para disparar regla de insercion en historial
+declare AlumnoRespuestaAux
+	id_alumno: int @key
+	id_examen: int @key
+	id_pregunta: int @key
+	id_opcion: int @key
+end
+
+declare limiteBajo
+	valor: int @key
+end
+
+declare limiteMedio
+	valor: int @key
+end
+
+declare limiteAlto
+	valor: int @key
+end
+
+rule "inicializar base de datos"
+    when
+        //nada
+    then
+		Materia OOP= new Materia(1,"Programacion Orientada a Objetos","Pedro Gonzalez","Departamento de Matematicas y Computacion","Ago-Dic 2013","TC08383");
+		insert(OOP);
+		
+		////BLOQUE 1 MATERIA 1
+		
+		Bloque bloque1_OOP= new Bloque(1, OOP, "Clases e instancias");
+		insert(bloque1_OOP);
+		
+		Clase clase1_bloque1_OOP= new Clase(1, bloque1_OOP, "Las Clases");
+		insert(clase1_bloque1_OOP);
+		
+		Contenido contenido_clase1_bloque1_OOP= new Contenido(1, 
+		clase1_bloque1_OOP, 
+		"texto",
+		"N/A",
+		"En informática, una clase es una plantilla para la creación de objetos de datos según un modelo predefinido. Las clases se utilizan para representar entidades o conceptos, como los sustantivos en el lenguaje. Cada clase es un modelo que define un conjunto de variables -el estado, y métodos apropiados para operar con dichos datos -el comportamiento. Cada objeto creado a partir de la clase se denomina instancia de la clase.");
+		insert(contenido_clase1_bloque1_OOP);
+		
+		Examen examen1_bloque1_OOP= new Examen(1,bloque1_OOP,OOP,"Examen Clases 1");	
+		insert(examen1_bloque1_OOP);
+		
+		Pregunta pregunta1_examen1_bloque1_OOP= new Pregunta(1,examen1_bloque1_OOP, "¿Que es una clase?", 1);
+		insert(pregunta1_examen1_bloque1_OOP);
+		
+		Opcion op1_pregunta1_examen1_bloque1_OOP= new Opcion(1,pregunta1_examen1_bloque1_OOP, "Un perro",false,1);
+		Opcion op2_pregunta1_examen1_bloque1_OOP= new Opcion(2,pregunta1_examen1_bloque1_OOP, "Un gato",false,2);
+		Opcion op3_pregunta1_examen1_bloque1_OOP= new Opcion(3,pregunta1_examen1_bloque1_OOP, "Un pollo",false,3);
+		Opcion op4_pregunta1_examen1_bloque1_OOP= new Opcion(4,pregunta1_examen1_bloque1_OOP, "Un template para generar objetos",true,4);
+		
+		insert(op1_pregunta1_examen1_bloque1_OOP);
+		insert(op2_pregunta1_examen1_bloque1_OOP);
+		insert(op3_pregunta1_examen1_bloque1_OOP);
+		insert(op4_pregunta1_examen1_bloque1_OOP);
+		
+		Pregunta pregunta2_examen1_bloque1_OOP= new Pregunta(2,examen1_bloque1_OOP, "¿Que es un objeto?", 2);
+		insert(pregunta2_examen1_bloque1_OOP);
+		
+		Opcion op1_pregunta2_examen1_bloque1_OOP= new Opcion(5,pregunta2_examen1_bloque1_OOP, "Un perro",false,1);
+		Opcion op2_pregunta2_examen1_bloque1_OOP= new Opcion(6,pregunta2_examen1_bloque1_OOP, "Un gato",false,2);
+		Opcion op3_pregunta2_examen1_bloque1_OOP= new Opcion(7,pregunta2_examen1_bloque1_OOP, "Un pollo",false,3);
+		Opcion op4_pregunta2_examen1_bloque1_OOP= new Opcion(8,pregunta2_examen1_bloque1_OOP, "Una instancia de una clase",true,4);
+		
+		insert(op1_pregunta2_examen1_bloque1_OOP);
+		insert(op2_pregunta2_examen1_bloque1_OOP);
+		insert(op3_pregunta2_examen1_bloque1_OOP);
+		insert(op4_pregunta2_examen1_bloque1_OOP);
+		
+		
+		////BLOQUE 2 MATERIA 2
+		
+		Bloque bloque2_OOP= new Bloque(2, OOP, "Caracteristicas de la POO");
+		insert(bloque2_OOP);
+		
+		Clase clase1_bloque2_OOP= new Clase(2, bloque1_OOP, "Herencia");
+		insert(clase1_bloque2_OOP);
+		
+		Contenido contenido_clase1_bloque2_OOP= new Contenido(1,
+		 clase1_bloque2_OOP, 
+		"texto",
+		"N/A",
+		"La herencia es bla bla");
+		insert(contenido_clase1_bloque2_OOP);
+		
+		///////EXAMEN 1 BLOQUE 2
+		
+		Examen examen1_bloque2_OOP= new Examen(2,bloque2_OOP,OOP,"Examen Clase 2");	
+		insert(examen1_bloque2_OOP);
+		
+		Pregunta pregunta1_examen1_bloque2_OOP= new Pregunta(3,examen1_bloque2_OOP, "¿Que es la herencia?", 1);
+		insert(pregunta1_examen1_bloque2_OOP);
+		
+		Opcion op1_pregunta1_examen1_bloque2_OOP= new Opcion(9,pregunta1_examen1_bloque2_OOP, "Un perro",false,1);
+		Opcion op2_pregunta1_examen1_bloque2_OOP= new Opcion(10,pregunta1_examen1_bloque2_OOP, "Un gato",false,2);
+		Opcion op3_pregunta1_examen1_bloque2_OOP= new Opcion(11,pregunta1_examen1_bloque2_OOP, "Un pollo",false,3);
+		Opcion op4_pregunta1_examen1_bloque2_OOP= new Opcion(12,pregunta1_examen1_bloque2_OOP, "Cuando una clase tiene metodos y atributos de otra",true,4);
+	
+		insert(op1_pregunta1_examen1_bloque2_OOP);
+		insert(op2_pregunta1_examen1_bloque2_OOP);
+		insert(op3_pregunta1_examen1_bloque2_OOP);
+		insert(op4_pregunta1_examen1_bloque2_OOP);
+		
+		Pregunta pregunta2_examen1_bloque2_OOP= new Pregunta(4,examen1_bloque2_OOP, "¿Que es el polimorfismo?", 2);
+		insert(pregunta2_examen1_bloque2_OOP);
+		
+		Opcion op1_pregunta2_examen1_bloque2_OOP= new Opcion(13,pregunta2_examen1_bloque2_OOP, "Un perro",false,1);
+		Opcion op2_pregunta2_examen1_bloque2_OOP= new Opcion(14,pregunta2_examen1_bloque2_OOP, "Un gato",false,2);
+		Opcion op3_pregunta2_examen1_bloque2_OOP= new Opcion(15,pregunta2_examen1_bloque2_OOP, "Un pollo",false,3);
+		Opcion op4_pregunta2_examen1_bloque2_OOP= new Opcion(16,pregunta2_examen1_bloque2_OOP, "La capacidad de una clase para comportarse como otra.",true,4);
+		
+		insert(op1_pregunta2_examen1_bloque2_OOP);
+		insert(op2_pregunta2_examen1_bloque2_OOP);
+		insert(op3_pregunta2_examen1_bloque2_OOP);
+		insert(op4_pregunta2_examen1_bloque2_OOP);		
+		
+		insert(new Alumno(12, "A", "1", 0));
+		insert(new Alumno(13, "B", "2", 0));
+		insert(new Alumno(14, "C", "3", 0));
+		insert(new Alumno(15, "D", "4", 0));
+			
+end
+
+//prueba dospara reglas
+rule "hay alumno con matricula x"
+	when	
+		$x: Alumno(matricula == "A01337545");	
+	then
+		insert(new Alumno(15, "D", "4",0));
+		System.out.println("DISPARO ESTA REGLA!!!");
+		
+end
+
+/*
+//VERSION PRELIMINAR: SE PLANTEA SIMPLIFICARSE EN LA VERSION FINAL
+rule "mostrar preguntas y opciones de examen actual primera opcion"
+	when
+		$ex_aux: ExamenActualAux();
+		$pregunta: Pregunta($ex_aux.id_examen == examen.id_examen);
+		$opcion: Opcion($pregunta.id_pregunta == pregunta.id_pregunta);
+	then
+	//Todos los system out son para motivos de demostracion de la aplciacion, se sustituiran por
+	//el formato apropiado para el servicio REST terminado
+		System.out.println($ex_aux.getNombre()+": "+$pregunta.getDescripcion()+": "+$opcion.getDescripcion()+": "+$opcion.getNumero());
+end
+
+rule "crear nuevo historial con cada examen"
+	when
+	//asume que ya se precargo en la aplicacion el objeto auxiliar ExamenActualAux
+		$ex_aux: ExamenActualAux();
+		$examen: Examen(id_examen==$ex_aux.id_examen);
+		$alumno: Alumno(id_alumno==$ex_aux.id_alumno);
+	then
+	//genera un nuevo historial para ese alumno
+		insert(new Historial($examen, $alumno, 0, 0, 1, 0));
+end
+
+rule "insertar nueva respuesta y ligar con historial"
+	when
+	//solo debe existir una instancia de examen actual aux, de la pregunta aux actual y la opcion escogida aux
+	//todo esto se manejara desde el lado del cliente a traves de la interaccion con el REST
+		$ex_aux: ExamenActualAux();
+		$preg_aux:PreguntaActualAux();
+		$opc_aux:OpcionEscogidaAux();		
+		$pregunta: Pregunta($preg_aux.id_pregunta== id_pregunta);
+		$historial: Historial(examen.id_examen==$ex_aux.id_examen);
+		$opcionCorrecta: Opcion(pregunta.id_pregunta == $pregunta.id_pregunta && es_correcta==true);				
+	then
+		long s1= System.currentTimeMillis();		
+		//este mecanismo sera reemplazado por lo apropiado cuando se publique el servicio rest
+		System.out.println("Dame la respuesta");
+		Scanner s= new Scanner(System.in);
+		String respuesta=s.nextLine();
+		long s2= System.currentTimeMillis();
+		long tiempo=s2-s1;
+		Respuestas r=new Respuestas($historial, $pregunta, $opc_aux.getOpcion().getNumero()+"" , tiempo);					
+		insert(r);
+		//actualizar los aciertos y los errores por examen
+		if(r.getRespuesta().equals($opcionCorrecta.getNumero())){
+			$historial.setAciertos($historial.getAciertos()+1);
+			update($historial);
+		}else{
+			$historial.setFalsos($historial.getFalsos()+1);
+			update($historial);
+		}
+end
+
+rule "calcular avance del alumno"
+	when
+		$ex_aux: ExamenActualAux();
+		$historial_alumno:Historial(alumno.id_alumno == $ex_aux.id_alumno);
+		$respuesta: Respuestas( $historial_alumno.examen.id_examen == historial.examen.id_examen);
+		$alumno: Alumno(id_alumno == $historial_alumno.alumno.id_alumno);		
+	then
+		$alumno.setAvance($alumno.getAvance()+$historial_alumno.getAciertos());
+		update($alumno);
+end
+
+rule "mostrar preguntas de nivel bajo"
+	when		
+		$alumno:Alumno(avance <= limiteBajo);
+		$pregunta:Pregunta(nivel_dificultad>=1 && nivel_dificultad<=2);
+	then
+	//se sustituira por los mecanismos de escritura de output del REST
+		System.out.println($pregunta.getDescripcion());	
+end
+
+rule "mostrar preguntas de nivel medio"
+	when
+		$alumno:Alumno(avance <= limiteMedio);
+		$pregunta:Pregunta(nivel_dificultad>2 && nivel_dificultad<=4);
+	then
+	//se sustituira por los mecanismos de escritura de output del REST
+		System.out.println($pregunta.getDescripcion());	
+end
+
+rule "mostrar preguntas de nivel alto"
+	when
+		$alumno:Alumno(avance <= limiteAlto);
+		$pregunta:Pregunta(nivel_dificultad>=5);
+	then
+	//se sustituira por los mecanismos de escritura de output del REST
+		System.out.println($pregunta.getDescripcion());	
+end
+*/

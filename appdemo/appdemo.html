@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <title>
+        Sheller
+    </title>
+    <script type="application/javascript" src="frameworks/jquery-3.2.0.min.js"></script>
+</head>
+
+<body>
+    <h2>Forma guardar alumno</h2>
+    <form action="http://127.0.0.1:8080/api/alumno/insertar" method="get" id="formaGuardar">
+        Id:
+        <input type="text" name="id" id="id" />
+        <br/> Nombre:
+        <input type="text" name="nombre" id="nombre" />
+        <br/> Matricula:
+        <input type="text" name="matricula" id="matricula" />
+        <br/>Avance:
+        <input type="text" name="avance" id="avance" />
+        <br/>
+        <button>Enviar</button>
+    </form>
+
+    <br/>
+    <br/>
+    <br/>
+    <h2>Forma buscar alumno</h2>
+
+    <form action="http://127.0.0.1:8080/api/alumno/buscar" method="get" id="formaBuscarAlumno">
+        Matricula:
+        <input type="text" name="matricula" id="matricula" />
+        <br/>
+        <button>Enviar</button>
+    </form>
+
+
+    <h2>Forma buscar examen</h2>
+    <form method="get" id="formaBuscarExamen">
+        ID examen:
+        <input type="text" name="id_examen" id="id_examen" />
+        <br/>
+        <button onclick="generarExamen()" id="botonBuscarExamen">Enviar</button>
+    </form>
+
+</body>
+
+<script>
+    $("#botonBuscarExamen").click(function(event) {
+        event.preventDefault();
+    });
+
+
+    var tiempo1;
+
+    function generarExamen() {
+        //usen el metodo de llamada que mejor les parezca, el que esta comentado usa jquery
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            url: "http://127.0.0.1:8080/api/examen/buscar",
+            data: {
+                'id': $("#id_examen").val()
+            },
+            cache: false,
+            //aqui pueden manipular los datos como quieran para pintar el contenido y los examenes,
+            //desconozco como se usen esas cosas fancies de react y angular pero me imagino que tienen
+            //equivalentes lol
+            //basicamente la funcion success devuelve el json que el rest responde y lo parsea
+            //automaticamente a un arreglo que pueden acceder por indice asociativo (nombre de las propiedades)
+            //y esto se puede usar para acceder a los datos individuales de la respuesta
+            //IMPORTANTE: RECUERDEN AGREGAR TODOS LOS IDs NECESARIOS A LOS OBJETOS QUE PINTEN
+            //PARA PODER ACCEDER A ELLOS CUANDO SE PROCESE EL MENSAJE EN EL LADO DEL SERVIDOR EN EL REST
+            //e.g. a un boton de radio ponerle de id "1_2_3_0_opc" donde 1 es el id del examen, 2 es el id de la 
+            //pregunta, 3 el id de la opcion y 0 el bit que indica que es falso o verdadero, ya del lado del servidor
+            //le hacen un split al id y hacen las operaciones de insercion con esos valores etc.
+            success: function(data) {
+
+                //comenzar a medir el tiempo en el que se realiza el examen cuando se despliega el examen
+                tiempo1 = Date.now();
+                console.log(tiempo1);
+                console.log(data);
+
+                var nombre_examen = data["examen"]["bloque"]["nombre"];
+                var id_examen = data["examen"]["id_examen"];
+                var elemento_nombre_examen = "<h1> Examen: " + nombre_examen + "</h1>";
+                $("body").append(elemento_nombre_examen);
+
+                //todo debe estar en una forma porque lo vamos a enviar mas adelante
+                $("body").append("<form id='formaExamen' method='get' action='http://127.0.0.1:8080/api/examen/responder'>");
+
+                //imprimir las preguntas
+                for (var i = 0; i < data["preguntas"].length; i++) {
+                    var id_pregunta_actual = data["preguntas"][i]["id_pregunta"];
+                    $("#formaExamen").append(data["preguntas"][i]["descripcion"] + "<br>");
+
+                    //imprimir las opciones de cada pregunta, notese el uso del id de la pregunta
+                    //para ver cuales opciones pertenecen a ella. TIP: USAR EL CONSOLE.LOG para ver
+                    //las estructuras internas de los objetos
+                    var contador_numero_izquierda = 1;
+                    for (var j = 0; j < data["opciones"].length; j++) {
+                        if (data["opciones"][j]["pregunta"]["id_pregunta"] == id_pregunta_actual) {
+
+                            var id_opcion = data["opciones"][j]["id_opcion"];
+
+                            var es_correcta = data["opciones"][j]["es_correcta"] == true ? 1 : 0;
+                            //generacion de un valor compuesto para identificacion en el servidor
+                            var valor_compuesto_opcion = id_examen + "_" + id_pregunta_actual +
+                                "_" + id_opcion + "_" + es_correcta;
+
+                            $("#formaExamen").append(contador_numero_izquierda + ") " +
+                                "<input type='radio' name='preg" + i + "' value='" + valor_compuesto_opcion + "' >" +
+                                data["opciones"][j]["descripcion"] +
+                                "<br/>");
+                            contador_numero_izquierda++;
+                        }
+                    }
+                }
+
+                //este es un valor ficticio para el id del alumno que hizo el examen, pero debe haber
+                //una forma de rastrear este di, en este caso lo hago con un campo oculto
+                var valor_dummy_matricula_alumno_que_hizo_el_examen = "A01337545";
+                $("#formaExamen").append("<input type='hidden' name='matricula' value='" +
+                    valor_dummy_matricula_alumno_que_hizo_el_examen + "'>");
+                //campo oculto para pasarle al servidor el tiempo que se tardo el alumno en responder el examen
+                $("#formaExamen").append("<input type='hidden' name='tiempo' id='tiempo_examen' >");
+
+                $("#formaExamen").append("<button id='boton_enviar_examen' >Enviar</button>");
+                $("body").append("</form>");
+
+                //ESTA FORMA VA A ENVIAR EL SIGUIENTE URI AL REST (seleccionando opciones random): 
+                //http://127.0.0.1:8080/api/examen/responder?preg_0=1_2_7_0&preg_1=1_1_2_0
+
+
+            }
+        });
+
+
+        $("body").on("click", "#boton_enviar_examen", function(event) {
+            event.preventDefault();
+            //cambiar el valor del campo oculto a la diferencia del tiempo entre el momento que se hace
+            //submit y cuando se empezo el examen
+
+            var tiempo2 = Date.now();
+            var tiempo_en_resolver_examen = tiempo2 - tiempo1;
+            document.getElementById('tiempo_examen').value = tiempo_en_resolver_examen;
+
+            $("#formaExamen").submit();
+        });
+
+    }
+
+</script>
+
+</html>
